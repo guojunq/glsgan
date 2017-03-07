@@ -1,5 +1,4 @@
-*## GLSGAN
-Generalized Loss-Sensitive Generative Adversarial Networks (GLS-GAN)
+## Generalized Loss-Sensitive Generative Adversarial Networks (GLS-GAN)
 
 
 
