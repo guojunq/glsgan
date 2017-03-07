@@ -36,10 +36,12 @@ opt = {
    gpu = 2,                -- gpu = -1 is CPU mode. gpu=X is GPU mode on GPU X
    name = 'lsgan_result',
    noise = 'uniform',       -- uniform / normal
-   lambda=0.008,              -- the scale of the distance metric used for adaptive margins. This is actually tau in the original paper. L2: 0.05/L1: 0.001, temporary best 0.008 before applying scaling, 
-   gamma = 0.,		      -- the coefficient for loss minimization term.  Set to zero for non-conditional LS-GAN as the theorem shows this term can be ignored. 
-   decay_rate = 0.1,  -- weight decay: 0.00005 
-   slope = 0.2,         -- slope for the Leaky Rectified Linear of the cost function
+   lambda=0.0002,           -- the scale of the distance metric used for adaptive margins. This is actually tau in the original paper. L2: 0.05/L1: 0.001, temporary best 0.008 before applying scaling, 
+   gamma = 0.,		    -- the coefficient for loss minimization term.  Set to zero for non-conditional LS-GAN as the theorem shows this term can be ignored. 
+   decay_rate = 0.,         -- weight decay: 0.00005 
+   slope = 0.2,             -- slope for the Leaky Rectified Linear of the cost function
+   b_weight = 0.02,         -- weight clipping bound
+   proj_clip_weight = 1,     -- a switch 0: none 1: projecting weight 2: clipping weight
 }
 
 -- one-line argument parser. parses enviroment variables to override the defaults
@@ -75,6 +77,7 @@ local ndf = opt.ndf
 local ngf = opt.ngf
 local real_label = -1 -- the original one was 1 , we changed that for sake of MarginCriterion
 local fake_label = 0
+local b_weight = opt.b_weight
 
 local SpatialBatchNormalization = nn.SpatialBatchNormalization
 local SpatialConvolution = nn.SpatialConvolution
@@ -124,7 +127,7 @@ netD:add(SpatialConvolution(ndf * 8, 1, 4, 4))
 -- state size: 1 x 1 x 1
 
 --netD:add(nn.SoftPlus())
-netD:add(nn.ReLU(true))
+--netD:add(nn.ReLU(true))
 netD:add(nn.View(1):setNumInputDims(3))
 -- state size: 1
 
@@ -158,6 +161,15 @@ optimStateDsgd = {
    learningRateDecay=1.000004,
    momentum = 0.,--opt.beta1,
 }
+
+optimStateGrms = {
+   learningRate = 0.00005,
+   }
+
+optimStateDrms = {
+   learningRate = 0.00005,
+   }
+   
 ----------------------------------------------------------------------------
 local input = torch.Tensor(opt.batchSize, 3, opt.fineSize, opt.fineSize)
 local noise = torch.Tensor(opt.batchSize, nz, 1, 1)
@@ -198,6 +210,23 @@ elseif opt.noise == 'normal' then
     noise_vis:normal(0, 1)
 end
 
+-------------- clipping weights -----------------
+local clip =  function(parameters,bound)
+	
+	parameters[parameters:ge(bound)]=bound
+	parameters[parameters:le(-bound)]=-bound
+	return parameters
+end
+
+--------------- projecting weights into a supersphere of radium bound ---------------
+local proj_weight = function(parameters, bound)
+	local m=torch.abs(parameters):mean()
+        
+        if m>bound then
+           parameters=prameters * bound / m
+        end
+        return parameters
+end
 
 -- create closure to evaluate f(X) and df/dX of discriminator
 local fDx = function(x)
@@ -283,12 +312,22 @@ for epoch = 1, opt.niter do
 
 
         -- (1) Update loss function network:
-      optim.adam(fDx, parametersD, optimStateD)-- original
+      --optim.adam(fDx, parametersD, optimStateD)-- original
+      optim.rmsprop(fDx, parametersD, optimStateDrms)
+
         --optim.sgd(fDx, parametersD, optimStateDsgd)
+      if proj_clip_weight == 1 then
+         proj_weight(parametersD, b_weight)
+      elseif proj_clip_weight == 2 then
+         clip(parametersD, b_weight)
+      end
 
         -- (2) Update G network: 
-      optim.adam(fGx, parametersG, optimStateG)
+      --optim.adam(fGx, parametersG, optimStateG)
+      optim.rmsprop(fGx, parametersG, optimStateGrms)
+
         --optim.sgd(fGx, parametersG, optimStateGsgd)
+      
 
       -- display
       counter = counter + 1
