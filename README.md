@@ -41,7 +41,7 @@ DATA_ROOT=celebA th data/crop_celebA.lua
 2. Training the GLS-GAN
 
 ```bash
-DATA_ROOT=celebA dataset=folder th gls-gan.lua
+DATA_ROOT=celebA dataset=folder th glsgan.lua
 ```
 
 ### For LSUN dataset
