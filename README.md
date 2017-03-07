@@ -14,9 +14,32 @@ Please refer to Appendix D in
 
 The cost function used in the cost is a leaky rectified linear unit with a slope set in input opt. By default it is 0.2.
 
+If you set slope to 0, you shall get LS-GAN;
+If you set slope to 1.0, you shall get WGAN.
+
 Please note that the GLS-GAN is proposed as our future work in the above preprint paper, but it is NOT tested yet. So please use it **at your own discretion**.
 
-### For GLS-GAN 
+### For celebA dataset
+1. Setup and download dataset 
+
+```bash
+mkdir celebA; cd celebA
+```
+
+Download img_align_celeba.zip from [http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html) under the link "Align&Cropped Images".
+
+```bash
+unzip img_align_celeba.zip; cd ..
+DATA_ROOT=celebA th data/crop_celebA.lua
+```
+
+2. Training the GLS-GAN
+
+```bash
+DATA_ROOT=celebA dataset=folder th gls-gan.lua
+```
+
+### For LSUN dataset
 
 1. Please download bedroom_train_lmdb from http://lsun.cs.princeton.edu
 
