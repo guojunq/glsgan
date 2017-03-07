@@ -1,4 +1,4 @@
-## GLSGAN
+*## GLSGAN
 Generalized Loss-Sensitive Generative Adversarial Networks (GLS-GAN)
 
 
@@ -19,8 +19,9 @@ For details, please refer to **Appendix D** in
 
 The cost function used in this GLS-GAN implementation is a leaky rectified linear unit with a slope set in input opt. By default it is 0.2.
 
-- If you set slope to 0, you shall get LS-GAN;
-- If you set slope to 1.0, you shall get WGAN.
+- **If you set slope to 0, you shall get LS-GAN;**
+- **If you set slope to 1.0, you shall get WGAN.**
+
 
 Please note that the GLS-GAN is proposed as our future work in the above preprint paper, but it has NOT been carefully tested yet. So please use it **at your own discretion**.
 
