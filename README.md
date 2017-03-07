@@ -12,7 +12,7 @@ guojunq@gmail.com
 Date: 3/6/2017
 
 This implements a Generalized LS-GAN (GLS-GAN). 
-For details, please refer to Appendix D in 
+For details, please refer to **Appendix D** in 
 
 **Guo-Jn Qi. Loss-Sensitive Generative Adversarial Networks on Lipschitz Densities. arXiv:1701.06264 [[pdf](https://arxiv.org/abs/1701.06264)]**
 
