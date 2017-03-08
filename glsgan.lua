@@ -27,21 +27,22 @@ opt = {
    ngf = 64,               -- #  of gen filters in first conv layer
    ndf = 64,               -- #  of discrim filters in first conv layer
    nThreads = 4,           -- #  of data loading threads to use
-   niter = 25,             -- #  of iter at starting learning rate
+   niter = 50,             -- #  of iter at starting learning rate
    lr = 0.0001,            -- initial learning rate for adam
    beta1 = 0.5,--0.5,            -- momentum term of adam
    ntrain = math.huge,     -- #  of examples per epoch. math.huge for full dataset
    display = 1,            -- display samples while training. 0 = false
-   display_id = 12,        -- display window id.
+   display_id = 11,        -- display window id.
    gpu = 2,                -- gpu = -1 is CPU mode. gpu=X is GPU mode on GPU X
-   name = 'lsgan_result',
+   name = 'glsgan_result',
    noise = 'uniform',       -- uniform / normal
    lambda=0.0002,           -- the scale of the distance metric used for adaptive margins. This is actually tau in the original paper. L2: 0.05/L1: 0.001, temporary best 0.008 before applying scaling, 
    gamma = 0.,		    -- the coefficient for loss minimization term.  Set to zero for non-conditional LS-GAN as the theorem shows this term can be ignored. 
    decay_rate = 0.,         -- weight decay: 0.00005 
-   slope = 0.2,             -- slope for the Leaky Rectified Linear of the cost function
+   slope = 0.5,             -- slope for the Leaky Rectified Linear of the cost function
    b_weight = 0.02,         -- weight clipping bound
-   proj_clip_weight = 1,     -- a switch 0: none 1: projecting weight 2: clipping weight
+   proj_clip_weight = 2,     -- a switch 0: none 1: projecting weight 2: clipping weight
+   optim_method = 1,         -- the optimization method used to train GLS-GAN. 1: adam, 2:rmsprop
 }
 
 -- one-line argument parser. parses enviroment variables to override the defaults
@@ -223,7 +224,7 @@ local proj_weight = function(parameters, bound)
 	local m=torch.abs(parameters):mean()
         
         if m>bound then
-           parameters=prameters * bound / m
+           parameters[{}] = parameters[{}] * bound / m
         end
         return parameters
 end
@@ -312,22 +313,31 @@ for epoch = 1, opt.niter do
 
 
         -- (1) Update loss function network:
-      --optim.adam(fDx, parametersD, optimStateD)-- original
-      optim.rmsprop(fDx, parametersD, optimStateDrms)
-
+      if opt.optim_method == 1 then
+      	optim.adam(fDx, parametersD, optimStateD)-- original
         --optim.sgd(fDx, parametersD, optimStateDsgd)
-      if proj_clip_weight == 1 then
+      elseif opt.optim_method == 2 then
+	optim.rmsprop(fDx, parametersD, optimStateDrms)
+      else
+	error('wrong optim')
+      end
+
+      if opt.proj_clip_weight == 1 then
          proj_weight(parametersD, b_weight)
-      elseif proj_clip_weight == 2 then
+      elseif opt.proj_clip_weight == 2 then
          clip(parametersD, b_weight)
       end
 
         -- (2) Update G network: 
-      --optim.adam(fGx, parametersG, optimStateG)
-      optim.rmsprop(fGx, parametersG, optimStateGrms)
-
+      if opt.optim_method == 1 then
+      	optim.adam(fGx, parametersG, optimStateG)
         --optim.sgd(fGx, parametersG, optimStateGsgd)
-      
+      elseif opt.optim_method == 2 then
+      	optim.rmsprop(fGx, parametersG, optimStateGrms)
+      else
+	error('wrong optim')
+      end
+
 
       -- display
       counter = counter + 1
