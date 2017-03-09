@@ -1,12 +1,12 @@
 ## Generalized Loss-Sensitive Generative Adversarial Networks (GLS-GAN)
 
 
-
 File: glsgan.lua
 
 Author: Guo-Jun Qi, 
 
 guojunq@gmail.com
+
 
 Date: 3/6/2017
 
@@ -16,11 +16,12 @@ For details, please refer to **Appendix D** in
 **Guo-Jn Qi. Loss-Sensitive Generative Adversarial Networks on Lipschitz Densities. arXiv:1701.06264 [[pdf](https://arxiv.org/abs/1701.06264)]**
 
 
-The cost function used in this GLS-GAN implementation is a leaky rectified linear unit with a slope set in input opt. By default it is 0.2.
+The cost function used in this GLS-GAN implementation is a leaky rectified linear unit (LeakyReLU) whose slope is set in the input opt. By default it is -1.
 
 - **If you set slope to 0, you shall get LS-GAN;**
 - **If you set slope to 1.0, you shall get WGAN.**
-
+- **If you set slope to -1.0, the cost function becomes L1 cost, i.e., C(a)=|a| and the loss function L will minimize |\Delta(real, fake)+L(real)-L(fake)|.  This is a very interesting case of GLS-GAN**
+- **In the theory we showed in the preprint, slope can be set to any value in [-\infty, 1].** 
 
 Please note that the GLS-GAN is proposed as our future work in the above preprint paper, but it has NOT been carefully tested yet. So please use it **at your own discretion**.
 
