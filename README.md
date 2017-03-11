@@ -23,12 +23,13 @@ The cost function used in this GLS-GAN implementation is a leaky rectified linea
 - **If you set slope to -1.0, the cost function becomes L1 cost, i.e., C(a)=|a| and the loss function L will minimize |\Delta(real, fake)+L(real)-L(fake)|.  This is a very interesting case of GLS-GAN beyond the unknown class of GANs**
 - **In the theory we showed in the preprint, slope can be set to any value in [-\infty, 1].** 
 
-Please note that the GLS-GAN is proposed as our future work in the above preprint paper, but it has NOT been carefully tested yet. So please use it **at your own discretion**.
+aPlease note that the GLS-GAN is proposed as our future work in the above preprint paper, but it has NOT been carefully tested yet. So please use it **at your own discretion**.
 
 ## Notes on tuning hyperparameters
 The most important hyperparameter that has a direct impact on the performance is the **opt.slope** controlling the negative slope of the Leaky Linear Rectifier of the cost function. You can make a side-by-side comparison among WGAN (slope=1), LS-GAN (slope=0), and other GLS-GANs by varying opt.slope.
 
-By default, we set it to slope=-10. We compare the generation results by different slopes on celebA at [An incomplete map of the GAN models](http://www.cs.ucf.edu/~gqi/GANs.htm).
+bWe compare the generation results by different slopes on celebA at [An incomplete map of the GAN models](http://www.cs.ucf.edu/~gqi/GANs.htm).
+
 
 
 
@@ -44,12 +45,21 @@ Download img_align_celeba.zip from [http://mmlab.ie.cuhk.edu.hk/projects/CelebA.
 ```bash
 unzip img_align_celeba.zip; cd ..
 DATA_ROOT=celebA th data/crop_celebA.lua
-```
+```b
 
 2. Training the GLS-GAN
 
+GLS-GAN with C(a)=|a|
 ```bash
-DATA_ROOT=celebA dataset=folder th glsgan.lua
+DATA_ROOT=celebA dataset=folder slope=-1 th glsgan.lua
+```
+GLS-GAN with C(a)=a, i.e., Wasserstein GAN
+```bash
+DATA_ROOT=celebA dataset=folder slope=1 th glsgan.lua
+```
+GLS-GAN with C(a)=(a)_+, i.e., LS-GAN
+```bash
+DATA_ROOT=celebA dataset=folder slope=0 th glsgan.lua
 ```
 
 ## For LSUN dataset
