@@ -18,6 +18,7 @@ For details, please refer to **Appendix D** in
 
 The cost function used in this GLS-GAN implementation is a leaky rectified linear unit (LeakyReLU) whose slope is set in the input opt. By default it is -1.
 
+
 - **If you set slope to 0, you shall get LS-GAN;**
 - **If you set slope to 1.0, you shall get WGAN.**
 - **If you set slope to -1.0, the cost function becomes L1 cost, i.e., C(a)=|a| and the loss function L will minimize |\Delta(real, fake)+L(real)-L(fake)|.  This is a very interesting case of GLS-GAN beyond the unknown class of GANs**
@@ -45,19 +46,21 @@ Download img_align_celeba.zip from [http://mmlab.ie.cuhk.edu.hk/projects/CelebA.
 ```bash
 unzip img_align_celeba.zip; cd ..
 DATA_ROOT=celebA th data/crop_celebA.lua
-```b
+```
 
 2. Training the GLS-GAN
 
-GLS-GAN with C(a)=|a|
+- GLS-GAN with C(a)=|a|
 ```bash
 DATA_ROOT=celebA dataset=folder slope=-1 th glsgan.lua
 ```
-GLS-GAN with C(a)=a, i.e., Wasserstein GAN
+
+- GLS-GAN with C(a)=a, i.e., Wasserstein GAN
 ```bash
 DATA_ROOT=celebA dataset=folder slope=1 th glsgan.lua
 ```
-GLS-GAN with C(a)=(a)_+, i.e., LS-GAN
+
+- GLS-GAN with C(a)=(a)_+, i.e., LS-GAN
 ```bash
 DATA_ROOT=celebA dataset=folder slope=0 th glsgan.lua
 ```
