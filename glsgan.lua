@@ -39,8 +39,8 @@ opt = {
    lambda=0.0002,           -- the scale of the distance metric used for adaptive margins. This is actually tau in the original paper. L2: 0.05/L1: 0.001, temporary best 0.008 before applying scaling, 
    gamma = 0.,		    -- the coefficient for loss minimization term.  Set to zero for non-conditional LS-GAN as the theorem shows this term can be ignored. 
    decay_rate = 0.,         -- weight decay: 0.00005 
-   slope = -1,              -- slope for the Leaky Rectified Linear of the cost function. It can be set in [-\infty, 1].  Slope = 1 corresponds to Wasserstein GAN, slope = 0 is LS-GAN, and slope=-1 yields C(a)=|a| (L_1 cost).
-   b_weight = 0.1,         -- weight clipping bound
+   slope = 0,              -- slope for the Leaky Rectified Linear of the cost function. It can be set in [-\infty, 1].  Slope = 1 corresponds to Wasserstein GAN, slope = 0 is LS-GAN, and slope=-1 yields C(a)=|a| (L_1 cost).
+   b_weight = 0.08,         -- weight clipping bound
    proj_clip_weight = 2,     -- a switch 0: none 1: projecting weight 2: clipping weight
    optim_method = 1,         -- the optimization method used to train GLS-GAN. 1: adam, 2:rmsprop
 }
